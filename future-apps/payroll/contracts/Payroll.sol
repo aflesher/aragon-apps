@@ -32,6 +32,7 @@ contract Payroll is AragonApp { //, IForwarder { // makes coverage crash (remove
         uint256 denominationTokenSalary; // per second
         uint256 lastPayroll;
         string name;
+        uint256 startDate; 
     }
 
     uint128 public nextEmployee; // starts at 1
@@ -333,7 +334,8 @@ contract Payroll is AragonApp { //, IForwarder { // makes coverage crash (remove
             address accountAddress,
             uint256 yearlyDenominationSalary,
             string name,
-            uint256 lastPayroll
+            uint256 lastPayroll,
+            uint256 startDate
         )
     {
         Employee storage employee = employees[employeeId];
@@ -342,6 +344,7 @@ contract Payroll is AragonApp { //, IForwarder { // makes coverage crash (remove
         yearlyDenominationSalary = employee.denominationTokenSalary.toYearlyDenomination();
         name = employee.name;
         lastPayroll = employee.lastPayroll;
+        startDate = employee.startDate;
     }
 
     /**
@@ -400,7 +403,8 @@ contract Payroll is AragonApp { //, IForwarder { // makes coverage crash (remove
             accountAddress: accountAddress,
             denominationTokenSalary: initialYearlyDenominationSalary.toSecondDenominationToken(),
             lastPayroll: startDate,
-            name: name
+            name: name,
+            startDate: startDate
         });
         // Ids mapping
         employeeIds[accountAddress] = employeeId;
@@ -463,4 +467,12 @@ contract Payroll is AragonApp { //, IForwarder { // makes coverage crash (remove
 
     function getTimestamp() internal view returns (uint256) { return now; }
 
+    /** @dev Returns true if the given address belongs to the given employeeId
+      * @param _employeeId Employee's Id
+      * @param _address Employee's expected address
+      * @return True if the address matches the id
+      */
+    function addressBelongsToEmployee(uint128 _employeeId, address _address) public view returns(bool) {
+        return employeeIds[_address] == _employeeId;
+    }
 }
